@@ -13,60 +13,20 @@
         .taxi-yellow { color: #f2ba1d; }
         .bg-taxi-yellow { background-color: #f2ba1d; }
         .card { background: #121212; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .tab-btn { font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #555; transition: 0.3s; padding-bottom: 10px; border-bottom: 2px solid transparent; }
-        .tab-active { color: #f2ba1d; border-bottom-color: #f2ba1d; }
-        .btn-confirm { background: #fff; color: #000; font-weight: 800; border-radius: 16px; padding: 14px; font-size: 11px; width: 100%; text-transform: uppercase; }
-        .btn-decline { background: #1a1a1a; color: #ff3b30; font-weight: 700; border-radius: 16px; padding: 14px; font-size: 11px; width: 100%; text-transform: uppercase; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .sync-active { animation: pulse 2s infinite; }
+        .btn-confirm { background: #f2ba1d; color: #000; font-weight: 800; border-radius: 18px; padding: 16px; width: 100%; text-transform: uppercase; }
+        .active-tab { color: #f2ba1d; border-bottom: 2px solid #f2ba1d; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="p-5">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-2xl font-black tracking-tighter">BOSHQARUV</h1>
-            <div class="flex items-center space-x-2 mt-1">
-                <div class="h-1.5 w-1.5 bg-green-500 rounded-full sync-active"></div>
-                <p class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Tizim Online</p>
-            </div>
-        </div>
-        <button onclick="window.location.reload()" class="h-10 w-10 card flex items-center justify-center">
-            <i class="fa-solid fa-arrows-rotate text-xs text-zinc-400"></i>
-        </button>
+        <h1 class="text-2xl font-black tracking-tighter">ADMIN <span class="taxi-yellow">PRO</span></h1>
+        <div class="h-10 w-10 card flex items-center justify-center"><i class="fa-solid fa-shield-halved text-yellow-500"></i></div>
     </div>
 
-    <!-- Kassa Card -->
-    <div class="card p-6 mb-8 bg-gradient-to-br from-zinc-900 to-black border-none shadow-2xl">
-        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Umumiy Hisobot</p>
-        <div class="flex items-end space-x-2 mb-6">
-            <h2 id="total-revenue" class="text-4xl font-black tracking-tighter">15,400,000</h2>
-            <span class="text-xs font-bold taxi-yellow">UZS</span>
-        </div>
-        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5">
-            <div>
-                <p class="text-[8px] font-bold text-zinc-600 uppercase mb-1">Admin Foydasi</p>
-                <p id="admin-profit" class="text-base font-black tracking-tight">1,540,000 <span class="text-[9px]">sum</span></p>
-            </div>
-            <div class="text-right">
-                <p class="text-[8px] font-bold text-zinc-600 uppercase mb-1">Faol Haydovchilar</p>
-                <p class="text-base font-black text-green-500">24 TA ONLAYN</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex justify-between mb-6 border-b border-white/5 px-2 overflow-x-auto no-scrollbar">
-        <button onclick="show('a')" id="ta" class="tab-btn tab-active">ARIZALAR</button>
-        <button onclick="show('d')" id="td" class="tab-btn">HAYDOVCHILAR</button>
-        <button onclick="show('s')" id="ts" class="tab-btn">SOS</button>
-        <button onclick="show('r')" id="tr" class="tab-btn">RADIO</button>
-    </div>
-
-    <!-- Content -->
-    <div id="content" class="space-y-4 pb-32">
-        <div class="py-20 text-center opacity-20"><i class="fa-solid fa-spinner animate-spin text-2xl"></i></div>
+    <div id="main-view" class="space-y-6">
+        <!-- Yuklanmoqda... -->
+        <div class="py-20 text-center opacity-30"><i class="fa-solid fa-spinner animate-spin text-2xl"></i></div>
     </div>
 
     <script>
@@ -77,86 +37,56 @@
         const token = '8899143978:AAEQcCgPHJkunL_kt31Vm8jhas8HpZKS-uQ';
         const groupId = '-1003713177314';
 
-        function show(t) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
-            document.getElementById('t'+t).classList.add('tab-active');
-            render(t);
-            tg.HapticFeedback.impactOccurred('medium');
-        }
+        // URL parametrlarini o'qish
+        const params = new URLSearchParams(window.location.search);
+        const appName = params.get('name');
+        const appPhone = params.get('phone');
+        const appCar = params.get('car');
 
-        async function fetchApps() {
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-20`);
-                const data = await res.json();
-                let apps = [];
-                if(data.ok) {
-                    data.result.forEach(u => {
-                        if(u.message && u.message.text && u.message.text.includes('ARIZASI')) {
-                            const text = u.message.text;
-                            const name = text.match(/Ism: (.*)/)?.[1] || 'Noma\'lum';
-                            const phone = text.match(/Tel: (.*)/)?.[1] || '';
-                            const car = text.match(/Mashina: (.*)/)?.[1] || '';
-                            apps.push({name, phone, car});
-                        }
-                    });
-                }
-                return apps;
-            } catch(e) { return []; }
-        }
-
-        async function approve(name, phone) {
-            tg.showConfirm(`${name} arizasini tasdiqlaysizmi?`, async (ok) => {
-                if(ok) {
-                    const msg = `✅ **TABRIKLAYMIZ!**\n\nHaydovchi **${name}** (${phone}) admin tomonidan tasdiqlandi va tizimga qo'shildi! 🚕`;
-                    await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${groupId}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
-                    tg.showAlert('Haydovchi muvaffaqiyatli tasdiqlandi!');
-                    render('a');
-                }
-            });
-        }
-
-        async function render(t) {
-            const box = document.getElementById('content');
-            if(t === 'a') {
-                box.innerHTML = '<div class="py-10 text-center opacity-30 text-xs">Arizalar qidirilmoqda...</div>';
-                const apps = await fetchApps();
-                if(apps.length === 0) {
-                    box.innerHTML = '<div class="card p-8 text-center opacity-30 font-bold text-xs uppercase italic tracking-widest">Yangi arizalar topilmadi</div>';
-                } else {
-                    box.innerHTML = apps.map(a => `
-                        <div class="card p-6 animate-item">
-                            <div class="flex justify-between items-start mb-4">
-                                <div><p class="font-black text-sm uppercase">${a.name}</p><p class="text-[10px] text-zinc-500 font-bold">${a.phone}</p></div>
-                                <span class="bg-yellow-500 text-black px-2 py-0.5 rounded text-[8px] font-black uppercase">Yangi</span>
-                            </div>
-                            <div class="bg-black/50 p-4 rounded-2xl border border-white/5 mb-5"><p class="text-xs font-medium text-zinc-300">🚗 ${a.car}</p></div>
-                            <div class="flex space-x-3">
-                                <button onclick="approve('${a.name}','${a.phone}')" class="btn-confirm">Tasdiqlash</button>
-                                <button onclick="tg.showAlert('Rad etildi')" class="btn-decline">Rad etish</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            } else if(t === 'r') {
+        function render() {
+            const box = document.getElementById('main-view');
+            if (appName && appPhone) {
                 box.innerHTML = `
-                    <div class="card p-6">
-                        <p class="text-[10px] font-black taxi-yellow tracking-widest mb-4 uppercase italic">Radio Translyatsiya</p>
-                        <textarea id="radio-msg" class="w-full bg-black border border-white/10 rounded-2xl p-4 text-sm mb-5 h-40 outline-none focus:border-yellow-500" placeholder="Haydovchilarga e'lon matni..."></textarea>
-                        <button onclick="sendRadio()" class="bg-taxi-yellow text-black py-4 rounded-xl font-black text-xs uppercase tracking-widest w-full">Radio orqali tarqatish</button>
+                    <div class="card p-6 border-yellow-500/20 shadow-2xl">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Yangi haydovchi</p>
+                                <h2 class="text-xl font-black uppercase">${appName}</h2>
+                                <p class="text-sm text-yellow-500 font-bold">${appPhone}</p>
+                            </div>
+                            <span class="bg-yellow-500 text-black px-2 py-1 rounded text-[8px] font-black uppercase">URGENT</span>
+                        </div>
+                        <div class="bg-zinc-900/50 p-5 rounded-3xl border border-white/5 mb-8">
+                            <p class="text-[10px] text-zinc-500 font-bold mb-2 uppercase tracking-tighter">Avtomobil ma'lumotlari:</p>
+                            <p class="text-sm font-semibold italic text-zinc-200">"${appCar}"</p>
+                        </div>
+                        <button onclick="approve('${appName}','${appPhone}')" class="btn-confirm mb-3">TASDIQLASH</button>
+                        <button onclick="tg.close()" class="w-full py-4 text-xs font-bold text-zinc-500 uppercase tracking-widest">BEKOR QILISH</button>
                     </div>`;
             } else {
-                box.innerHTML = '<div class="py-20 text-center opacity-10 font-bold text-xs uppercase">Ma\'lumotlar yuklanmoqda...</div>';
+                box.innerHTML = `
+                    <div class="card p-8 text-center">
+                        <i class="fa-solid fa-folder-open text-3xl opacity-10 mb-4"></i>
+                        <p class="text-sm font-bold text-zinc-500 uppercase tracking-widest leading-loose">
+                            Boshqaruv markaziga xush kelibsiz.<br>
+                            Arizalarni tasdiqlash uchun botdagi tugmani bosing.
+                        </p>
+                    </div>`;
             }
         }
 
-        async function sendRadio() {
-            const msg = document.getElementById('radio-msg').value;
-            if(!msg) return tg.showAlert('Xabar matnini yozing!');
-            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${groupId}&text=${encodeURIComponent('📻 **ADMIN XABARI:**\n\n' + msg)}&parse_mode=Markdown`);
-            if(res.ok) { tg.showAlert('Xabar yuborildi!'); document.getElementById('radio-msg').value = ''; }
+        async function approve(name, phone) {
+            const msg = `✅ **TASDIQLANDI!**\n\nHaydovchi **${name}** (${phone}) admin tomonidan tekshirildi va tizimga muvaffaqiyatli qo'shildi! 🚕\n\n_Endi u buyurtmalarni qabul qilishi mumkin._`;
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${groupId}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+                if(res.ok) {
+                    tg.showPopup({ title: 'Muvaffaqiyatli', message: 'Haydovchi tasdiqlandi!', buttons: [{type: 'close'}] });
+                    tg.HapticFeedback.notificationOccurred('success');
+                }
+            } catch(e) { tg.showAlert('Xatolik yuz berdi!'); }
         }
 
-        show('a');
+        render();
     </script>
 </body>
 </html>
