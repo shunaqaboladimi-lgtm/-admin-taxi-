@@ -3,94 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Weak Admin Pro</title>
+    <title>WEAK TAXI - CONTROL CENTER</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: #fff; font-family: -apple-system, sans-serif; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
         .taxi-yellow { color: #f2ba1d; }
         .bg-taxi-yellow { background-color: #f2ba1d; }
-        .card { background: #111; border-radius: 20px; padding: 18px; border: 1px solid rgba(255,255,255,0.05); }
-        .active-tab { color: #f2ba1d; border-bottom: 2px solid #f2ba1d; }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 24px; }
+        .card-stat { background: linear-gradient(145deg, #1c1c1e, #0a0a0a); border: 1px solid rgba(255,255,255,0.05); }
+        .active-tab { color: #f2ba1d; position: relative; }
+        .active-tab::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: #f2ba1d; border-radius: 10px; }
+        .btn-premium { background: linear-gradient(to right, #f2ba1d, #ffdb58); color: #000; font-weight: 800; border-radius: 16px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(242, 186, 29, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(242, 186, 29, 0); } 100% { box-shadow: 0 0 0 0 rgba(242, 186, 29, 0); } }
+        .pulse-active { animation: pulse-gold 2s infinite; }
     </style>
 </head>
-<body class="p-4">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-black taxi-yellow italic tracking-tighter">WEAK ADMIN PRO</h1>
-        <div class="bg-zinc-900 px-3 py-1 rounded-full border border-white/5">
-            <span class="text-[9px] font-bold text-green-500 uppercase">● LIVE SYSTEM</span>
+<body class="p-5">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-xs font-black tracking-[0.3em] text-gray-500 uppercase">System Hub</h1>
+            <p class="text-2xl font-orbitron taxi-yellow tracking-tighter">WEAK CONTROL</p>
+        </div>
+        <div class="h-12 w-12 glass flex items-center justify-center pulse-active">
+            <i class="fa-solid fa-microchip text-yellow-500/50"></i>
         </div>
     </div>
 
-    <!-- Stats -->
-    <div class="card bg-taxi-yellow text-black border-none mb-6 shadow-xl shadow-yellow-500/10">
-        <div class="flex justify-between">
-            <p class="text-[10px] font-black opacity-40 uppercase tracking-widest">Tizim holati</p>
-            <i class="fa-solid fa-signal opacity-30"></i>
+    <!-- Main Stats -->
+    <div class="glass p-6 mb-8 overflow-hidden relative">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+            <i class="fa-solid fa-crown text-6xl"></i>
         </div>
-        <h2 class="text-3xl font-black mt-1 tracking-tighter uppercase">AKTIV</h2>
-        <div class="mt-4 flex justify-between text-[10px] font-black border-t border-black/5 pt-3 uppercase">
-            <span>Admin: ONLINE</span>
-            <span>BOT: CONNECTED</span>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Live Revenue Stream</p>
+        <div class="flex items-baseline space-x-2">
+            <h2 id="totalRev" class="text-4xl font-black tracking-tighter">12,840,000</h2>
+            <span class="text-xs font-bold text-yellow-500">UZS</span>
+        </div>
+        <div class="mt-6 grid grid-cols-2 gap-4 pt-6 border-t border-white/5">
+            <div>
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Your Profit (10%)</p>
+                <p class="text-lg font-black tracking-tight">1,284,000 <span class="text-[10px]">sum</span></p>
+            </div>
+            <div class="text-right">
+                <p class="text-[8px] font-bold text-gray-500 uppercase">Active Nodes</p>
+                <p class="text-lg font-black tracking-tight text-green-500">24 ONLINE</p>
+            </div>
         </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex space-x-6 mb-6 overflow-x-auto border-b border-white/5 pb-1 no-scrollbar sticky top-0 bg-black z-50">
-        <button onclick="tab('a')" id="ta" class="active-tab pb-2 text-xs font-black uppercase">Arizalar</button>
-        <button onclick="tab('d')" id="td" class="text-zinc-500 pb-2 text-xs font-black uppercase">Haydovchilar</button>
-        <button onclick="tab('r')" id="tr" class="text-zinc-500 pb-2 text-xs font-black uppercase">E'lon</button>
+    <!-- Navigation -->
+    <div class="flex justify-between items-center mb-8 px-2 border-b border-white/5 pb-3">
+        <button onclick="tab('a')" id="ta" class="active-tab text-[10px] font-black tracking-widest">ARIZALAR</button>
+        <button onclick="tab('d')" id="td" class="text-gray-500 text-[10px] font-black tracking-widest">DRIVERS</button>
+        <button onclick="tab('s')" id="ts" class="text-gray-500 text-[10px] font-black tracking-widest">SOS</button>
+        <button onclick="tab('r')" id="tr" class="text-gray-500 text-[10px] font-black tracking-widest">RADIO</button>
     </div>
 
-    <div id="list" class="space-y-3">
-        <div class="py-20 text-center opacity-30">
-            <i class="fa-solid fa-spinner animate-spin text-2xl mb-4"></i>
-            <p class="text-[10px] font-bold tracking-widest uppercase">Ma'lumotlar kutilmoqda...</p>
-        </div>
-    </div>
+    <!-- Live Content -->
+    <div id="display" class="space-y-4 pb-24"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
         tg.expand();
+        tg.enableClosingConfirmation();
 
         function tab(t) {
-            document.querySelectorAll('button').forEach(b => b.className = "text-zinc-500 pb-2 text-xs font-black uppercase");
-            document.getElementById('t'+t).className = "active-tab pb-2 text-xs font-black uppercase";
+            document.querySelectorAll('button').forEach(b => b.className = "text-gray-500 text-[10px] font-black tracking-widest");
+            document.getElementById('t'+t).className = "active-tab text-[10px] font-black tracking-widest";
             render(t);
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         function render(t) {
-            const list = document.getElementById('list');
+            const box = document.getElementById('display');
             if(t === 'a') {
-                list.innerHTML = `
-                    <div class="card bg-zinc-900/50 border-yellow-500/20">
-                        <div class="flex justify-between mb-4">
-                            <div><p class="font-black text-sm uppercase">YANGI ARIZA</p><p class="text-[10px] text-zinc-500">Hozircha botga kelgan arizalar shu yerda ko'rinadi</p></div>
+                box.innerHTML = `
+                    <div class="glass p-5 border-yellow-500/20 bg-yellow-500/5">
+                        <div class="flex justify-between items-start mb-4">
+                            <div><p class="font-black text-sm uppercase">Zafar Aliev</p><p class="text-[10px] text-gray-500">+998 90 999 88 77</p></div>
+                            <span class="text-[8px] bg-yellow-500 text-black px-2 py-1 rounded font-black uppercase">Urgent</span>
                         </div>
-                        <p class="text-[11px] text-zinc-400 italic mb-4 bg-black/40 p-4 rounded-2xl border border-white/5 leading-relaxed">
-                           Sizga kelgan arizalarni tasdiqlash uchun botdagi xabarni kuting yoki Firebase kalitlarini ulab bering.
-                        </p>
-                        <button onclick="tg.showAlert('Tizim tayyor!')" class="w-full bg-white text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">TUSHUNARLI</button>
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-5 italic text-[11px] text-gray-400 leading-relaxed">
+                            "Nexia 3, 2023, Oq rang. Haydovchi tajribasi: 5 yil. Hamma hujjatlar joyida."
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="tg.showAlert('Node Approved')" class="flex-1 btn-premium py-3 text-[10px] tracking-widest">TASDIQLASH</button>
+                            <button onclick="tg.showAlert('Rejected')" class="px-6 glass text-[10px] font-bold text-red-500">RAD ETISH</button>
+                        </div>
                     </div>`;
             } else if(t === 'd') {
-                list.innerHTML = `<div class="card flex justify-between items-center opacity-50">
-                    <div><p class="font-black text-sm uppercase italic">Sinov rejimi</p><p class="text-[10px] text-zinc-500">Haydovchilar hali qo'shilmagan</p></div>
-                </div>`;
+                box.innerHTML = `
+                    <div class="glass p-4 flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <div class="h-10 w-10 bg-zinc-900 rounded-full flex items-center justify-center border border-white/10"><i class="fa-solid fa-user-tie text-yellow-500"></i></div>
+                            <div><p class="font-bold text-sm">Botir Qodirov</p><p class="text-[10px] text-gray-500">Gentra Black | 01 A 001 AA</p></div>
+                        </div>
+                        <div class="text-right"><p class="text-xs font-black taxi-yellow">450,000</p></div>
+                    </div>`;
             } else if(t === 'r') {
-                list.innerHTML = `
-                <div class="card">
-                    <p class="text-[10px] font-black taxi-yellow mb-4 uppercase tracking-widest italic">Radio Broadcast</p>
-                    <textarea class="w-full bg-black border border-white/10 rounded-2xl p-4 text-sm mb-4 h-40 focus:border-yellow-500 outline-none" placeholder="Haydovchilar uchun e'lon..."></textarea>
-                    <button onclick="tg.showAlert('Yuborildi!')" class="w-full bg-taxi-yellow text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest">TARQATISH</button>
-                </div>`;
+                box.innerHTML = `
+                    <div class="glass p-6">
+                        <p class="text-[10px] font-black taxi-yellow tracking-widest mb-4">BROADCAST SIGNAL</p>
+                        <textarea class="w-full bg-transparent border border-white/10 rounded-2xl p-4 text-sm mb-5 h-40 outline-none focus:border-yellow-500 transition-all" placeholder="Enter transmission message..."></textarea>
+                        <button onclick="tg.showAlert('Signal Broadcasted')" class="w-full btn-premium py-4 text-[10px] tracking-[0.3em]">SEND SIGNAL</button>
+                    </div>`;
+            } else {
+                box.innerHTML = `<div class="py-20 text-center opacity-10 font-black text-xs">NO ACTIVE SIGNALS</div>`;
             }
         }
-
-        setTimeout(() => render('a'), 500);
+        render('a');
     </script>
 </body>
 </html>
