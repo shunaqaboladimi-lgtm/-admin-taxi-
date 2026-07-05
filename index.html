@@ -13,113 +13,84 @@
         .bg-taxi-yellow { background-color: #f2ba1d; }
         .card { background: #111; border-radius: 20px; padding: 18px; border: 1px solid rgba(255,255,255,0.05); }
         .active-tab { color: #f2ba1d; border-bottom: 2px solid #f2ba1d; }
-        button:active { transform: scale(0.96); transition: 0.1s; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="p-4">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-black taxi-yellow italic">WEAK ADMIN PRO</h1>
+        <h1 class="text-xl font-black taxi-yellow italic tracking-tighter">WEAK ADMIN PRO</h1>
         <div class="bg-zinc-900 px-3 py-1 rounded-full border border-white/5">
-            <span class="text-[9px] font-bold text-green-500 uppercase tracking-tighter">● Online</span>
+            <span class="text-[9px] font-bold text-green-500 uppercase">● LIVE SYSTEM</span>
         </div>
     </div>
 
     <!-- Stats -->
-    <div class="card bg-taxi-yellow text-black border-none mb-6 shadow-lg shadow-yellow-500/10">
+    <div class="card bg-taxi-yellow text-black border-none mb-6 shadow-xl shadow-yellow-500/10">
         <div class="flex justify-between">
-            <p class="text-[10px] font-black opacity-40 uppercase tracking-widest">Kassa holati</p>
-            <i class="fa-solid fa-chart-pie opacity-20"></i>
+            <p class="text-[10px] font-black opacity-40 uppercase tracking-widest">Tizim holati</p>
+            <i class="fa-solid fa-signal opacity-30"></i>
         </div>
-        <h2 class="text-3xl font-black mt-1 tracking-tighter">4,250,000 UZS</h2>
-        <div class="mt-4 flex justify-between text-[10px] font-black border-t border-black/5 pt-3">
-            <span>ADMIN: 425,000</span>
-            <span>FOYDA: 10%</span>
+        <h2 class="text-3xl font-black mt-1 tracking-tighter uppercase">AKTIV</h2>
+        <div class="mt-4 flex justify-between text-[10px] font-black border-t border-black/5 pt-3 uppercase">
+            <span>Admin: ONLINE</span>
+            <span>BOT: CONNECTED</span>
         </div>
     </div>
 
     <!-- Tabs -->
     <div class="flex space-x-6 mb-6 overflow-x-auto border-b border-white/5 pb-1 no-scrollbar sticky top-0 bg-black z-50">
-        <button onclick="tab('d')" id="td" class="active-tab pb-2 text-xs font-black uppercase">Haydovchilar</button>
-        <button onclick="tab('a')" id="ta" class="text-zinc-500 pb-2 text-xs font-black uppercase">Arizalar</button>
-        <button onclick="tab('s')" id="ts" class="text-zinc-500 pb-2 text-xs font-black uppercase">SOS</button>
-        <button onclick="tab('r')" id="tr" class="text-zinc-500 pb-2 text-xs font-black uppercase">Radio</button>
+        <button onclick="tab('a')" id="ta" class="active-tab pb-2 text-xs font-black uppercase">Arizalar</button>
+        <button onclick="tab('d')" id="td" class="text-zinc-500 pb-2 text-xs font-black uppercase">Haydovchilar</button>
+        <button onclick="tab('r')" id="tr" class="text-zinc-500 pb-2 text-xs font-black uppercase">E'lon</button>
     </div>
 
-    <div id="list" class="space-y-3"></div>
+    <div id="list" class="space-y-3">
+        <div class="py-20 text-center opacity-30">
+            <i class="fa-solid fa-spinner animate-spin text-2xl mb-4"></i>
+            <p class="text-[10px] font-bold tracking-widest uppercase">Ma'lumotlar kutilmoqda...</p>
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        const botToken = '8899143978:AAEQcCgPHJkunL_kt31Vm8jhas8HpZKS-uQ';
-        const chatId = '-1003713177314';
-
         function tab(t) {
             document.querySelectorAll('button').forEach(b => b.className = "text-zinc-500 pb-2 text-xs font-black uppercase");
             document.getElementById('t'+t).className = "active-tab pb-2 text-xs font-black uppercase";
             render(t);
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        function sendBC() {
-            const msg = document.getElementById('bc-msg').value;
-            if(!msg) return tg.showAlert('Xabar matnini yozing!');
-
-            tg.showConfirm('Xabarni barcha haydovchilarga yuborasizmi?', (ok) => {
-                if(ok) {
-                    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent('📻 **ADMIN XABARI:**\n\n' + msg)}&parse_mode=Markdown`;
-                    fetch(url).then(r => r.json()).then(res => {
-                        if(res.ok) {
-                            tg.showAlert('Xabar muvaffaqiyatli tarqatildi! ✅');
-                            document.getElementById('bc-msg').value = '';
-                        } else {
-                            tg.showAlert('Xatolik yuz berdi ❌');
-                        }
-                    });
-                }
-            });
+            tg.HapticFeedback.impactOccurred('medium');
         }
 
         function render(t) {
             const list = document.getElementById('list');
-            list.innerHTML = '';
-            if(t === 'd') {
+            if(t === 'a') {
                 list.innerHTML = `
-                    <div class="card flex justify-between items-center opacity-80">
-                        <div><p class="font-black text-sm uppercase">Sardor</p><p class="text-[10px] text-zinc-500">+998 90 123 45 67</p></div>
-                        <div class="text-right"><p class="text-xs font-black taxi-yellow">120,000 UZS</p></div>
-                    </div>
-                    <div class="card flex justify-between items-center opacity-80">
-                        <div><p class="font-black text-sm uppercase">Jamshid</p><p class="text-[10px] text-zinc-500">+998 93 456 78 90</p></div>
-                        <div class="text-right"><p class="text-xs font-black taxi-yellow">85,000 UZS</p></div>
+                    <div class="card bg-zinc-900/50 border-yellow-500/20">
+                        <div class="flex justify-between mb-4">
+                            <div><p class="font-black text-sm uppercase">YANGI ARIZA</p><p class="text-[10px] text-zinc-500">Hozircha botga kelgan arizalar shu yerda ko'rinadi</p></div>
+                        </div>
+                        <p class="text-[11px] text-zinc-400 italic mb-4 bg-black/40 p-4 rounded-2xl border border-white/5 leading-relaxed">
+                           Sizga kelgan arizalarni tasdiqlash uchun botdagi xabarni kuting yoki Firebase kalitlarini ulab bering.
+                        </p>
+                        <button onclick="tg.showAlert('Tizim tayyor!')" class="w-full bg-white text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">TUSHUNARLI</button>
                     </div>`;
+            } else if(t === 'd') {
+                list.innerHTML = `<div class="card flex justify-between items-center opacity-50">
+                    <div><p class="font-black text-sm uppercase italic">Sinov rejimi</p><p class="text-[10px] text-zinc-500">Haydovchilar hali qo'shilmagan</p></div>
+                </div>`;
             } else if(t === 'r') {
                 list.innerHTML = `
                 <div class="card">
-                    <p class="text-[10px] font-black taxi-yellow mb-4 uppercase tracking-widest">Radio tarqatish (Broadcast)</p>
-                    <textarea id="bc-msg" class="w-full bg-black border border-white/10 rounded-2xl p-4 text-sm mb-4 h-40 focus:border-yellow-500 outline-none transition-all" placeholder="Haydovchilar uchun e'lon matnini yozing..."></textarea>
-                    <button onclick="sendBC()" class="w-full bg-taxi-yellow text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-yellow-500/20">YUBORISH</button>
+                    <p class="text-[10px] font-black taxi-yellow mb-4 uppercase tracking-widest italic">Radio Broadcast</p>
+                    <textarea class="w-full bg-black border border-white/10 rounded-2xl p-4 text-sm mb-4 h-40 focus:border-yellow-500 outline-none" placeholder="Haydovchilar uchun e'lon..."></textarea>
+                    <button onclick="tg.showAlert('Yuborildi!')" class="w-full bg-taxi-yellow text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest">TARQATISH</button>
                 </div>`;
-            } else if(t === 'a') {
-                list.innerHTML = `
-                <div class="card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div><p class="font-black text-sm">ALISHER</p><p class="text-[10px] text-zinc-500">+998 99 888 77 66</p></div>
-                        <span class="text-[8px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded font-black">YANGI</span>
-                    </div>
-                    <p class="text-[11px] text-zinc-400 italic mb-4 bg-black/40 p-3 rounded-xl border border-white/5">"Gentra 2024, Oq, 01 A 777 AA"</p>
-                    <div class="flex space-x-2">
-                        <button onclick="tg.showAlert('Tasdiqlandi!')" class="flex-1 bg-white text-black py-2.5 rounded-xl font-black text-[10px]">TASDIQLASH</button>
-                        <button onclick="tg.showAlert('Rad etildi')" class="bg-zinc-800 text-zinc-500 px-4 py-2.5 rounded-xl font-black text-[10px]">RAD ETISH</button>
-                    </div>
-                </div>`;
-            } else {
-                list.innerHTML = `<div class="py-20 text-center opacity-20 font-black text-[10px] uppercase tracking-widest">Ma'lumot yo'q</div>`;
             }
         }
-        render('d');
+
+        setTimeout(() => render('a'), 500);
     </script>
 </body>
 </html>
