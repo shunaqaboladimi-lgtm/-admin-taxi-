@@ -2,183 +2,179 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weak Taxi Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weak Taxi Admin - Live Control</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: white; font-family: -apple-system, sans-serif; }
-        .taxi-yellow { color: #f2ba1d; }
-        .bg-taxi-yellow { background-color: #f2ba1d; }
-        .card { background-color: #1c1c1e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .tab-active { border-bottom: 3px solid #f2ba1d; color: #f2ba1d; }
-        ::-webkit-scrollbar { display: none; }
+        :root { --tg-theme-bg-color: #000000; --tg-theme-text-color: #ffffff; --taxi-yellow: #f2ba1d; }
+        body { background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .taxi-yellow { color: var(--taxi-yellow); }
+        .bg-taxi-yellow { background-color: var(--taxi-yellow); }
+        .card { background: #1c1c1e; border-radius: 24px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .tab-btn { color: #8e8e93; font-weight: 800; font-size: 12px; letter-spacing: 1px; padding: 12px 0; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .tab-active { color: var(--taxi-yellow); border-bottom-color: var(--taxi-yellow); }
+        .btn-approve { background: #fff; color: #000; border-radius: 14px; font-weight: 900; padding: 10px; font-size: 11px; }
+        .btn-reject { background: #2c2c2e; color: #ff453a; border-radius: 14px; font-weight: 800; padding: 10px; font-size: 11px; }
+        .badge { background: rgba(242, 186, 29, 0.1); color: var(--taxi-yellow); padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-list { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="p-4">
-    <div class="flex items-center justify-between mb-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-2xl font-black taxi-yellow leading-tight">ADMIN PANEL</h1>
-            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Weak Taxi Management</p>
+            <h1 class="text-2xl font-black taxi-yellow tracking-tighter">WEAK ADMIN</h1>
+            <div class="flex items-center space-x-1.5 mt-0.5">
+                <span class="h-1.5 w-1.5 bg-green-500 rounded-full"></span>
+                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Live Sync Enabled</p>
+            </div>
         </div>
-        <div id="status-dot" class="h-2 w-2 bg-green-500 rounded-full animate-ping"></div>
+        <button onclick="window.location.reload()" class="h-10 w-10 bg-zinc-900 rounded-full flex items-center justify-center border border-white/10">
+            <i class="fa-solid fa-rotate-right text-xs"></i>
+        </button>
     </div>
 
-    <!-- Stats Card -->
-    <div class="card bg-taxi-yellow text-black border-none shadow-[0_10px_20px_rgba(242,186,29,0.2)]">
-        <p class="text-[10px] font-black opacity-50 uppercase tracking-tighter">Umumiy tushum</p>
-        <h2 id="totalRevenue" class="text-4xl font-black tracking-tighter">0 so'm</h2>
-        <div class="mt-4 pt-3 border-t border-black/10 flex justify-between items-end">
+    <!-- Stats Panel -->
+    <div class="card bg-taxi-yellow text-black border-none shadow-[0_20px_50px_rgba(242,186,29,0.2)] mb-8">
+        <div class="flex justify-between items-start">
             <div>
-                <p class="text-[9px] font-bold opacity-50 uppercase">Sizning foydangiz</p>
-                <span id="adminProfit" class="text-lg font-black tracking-tight">0 so'm</span>
+                <p class="text-[10px] font-black opacity-40 uppercase tracking-widest">Kassa holati</p>
+                <h2 id="totalRev" class="text-4xl font-black tracking-tight mt-1">4,250,000</h2>
+                <p class="text-[10px] font-bold opacity-30 mt-1 uppercase">So'm (Bugun)</p>
             </div>
-            <div class="bg-black/10 px-2 py-1 rounded-lg">
-                <span id="commissionRate" class="text-[10px] font-bold">10%</span>
+            <div class="h-12 w-12 bg-black/10 rounded-2xl flex items-center justify-center">
+                <i class="fa-solid fa-wallet text-xl"></i>
+            </div>
+        </div>
+        <div class="mt-6 pt-5 border-t border-black/5 flex justify-between items-center">
+            <div>
+                <p class="text-[9px] font-bold opacity-40 uppercase">Sizning ulushingiz</p>
+                <span class="text-xl font-black tracking-tighter">425,000 sum</span>
+            </div>
+            <div class="text-right">
+                <p class="text-[9px] font-bold opacity-40 uppercase">Komissiya</p>
+                <span class="text-xl font-black tracking-tighter">10%</span>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex space-x-6 mb-6 overflow-x-auto pb-2 sticky top-0 bg-black z-10 pt-2">
-        <button onclick="showTab('drivers')" id="btn-drivers" class="tab-btn tab-active text-sm font-bold whitespace-nowrap">Haydovchilar</button>
-        <button onclick="showTab('apps')" id="btn-apps" class="tab-btn text-gray-500 text-sm font-bold whitespace-nowrap">Arizalar</button>
-        <button onclick="showTab('sos')" id="btn-sos" class="tab-btn text-gray-500 text-sm font-bold whitespace-nowrap">SOS</button>
-        <button onclick="showTab('broadcast')" id="btn-broadcast" class="tab-btn text-gray-500 text-sm font-bold whitespace-nowrap">Xabar</button>
+    <!-- Tabs -->
+    <div class="flex space-x-8 mb-6 border-b border-white/5 sticky top-0 bg-black z-50 pt-2">
+        <button onclick="show('drivers')" id="t-drivers" class="tab-btn tab-active flex-1">DRIVERS</button>
+        <button onclick="show('apps')" id="t-apps" class="tab-btn flex-1">APPS <span id="app-count" class="ml-1 bg-red-500 text-white px-1.5 py-0.5 rounded-md text-[8px]">2</span></button>
+        <button onclick="show('sos')" id="t-sos" class="tab-btn flex-1">SOS</button>
+        <button onclick="show('radio')" id="t-radio" class="tab-btn flex-1">RADIO</button>
     </div>
 
     <!-- Content -->
-    <div id="tab-content" class="pb-20">
-        <div class="flex flex-col items-center justify-center py-20 opacity-20">
-            <div class="h-8 w-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    </div>
+    <div id="main-content" class="space-y-4 pb-20"></div>
 
     <script>
-        // --- FIREBASE KONFIGURATSIYASI ---
-        // Android ilovangizdagi Firebase ma'lumotlarini bu yerga qo'yishingiz shart!
-        const firebaseConfig = {
-            apiKey: "API_KALITINGIZNI_BU_YERGA_QO'YING",
-            projectId: "PROYEKT_ID_NI_BU_YERGA_QO'YING",
-            appId: "APP_ID_NI_BU_YERGA_QO'YING"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.headerColor = '#000000';
+        tg.backgroundColor = '#000000';
 
-        // Stats Listener
-        db.collection("stats").doc("general").onSnapshot(doc => {
-            if(doc.exists()){
-                const data = doc.data();
-                document.getElementById('totalRevenue').innerText = data.totalRevenue.toLocaleString() + " so'm";
-                document.getElementById('adminProfit').innerText = data.adminProfit.toLocaleString() + " so'm";
-                document.getElementById('commissionRate').innerText = (data.commissionRate || 10) + "%";
+        // Mock Data for Demo
+        const data = {
+            drivers: [
+                { name: "Sardor Azimov", tel: "+998 90 123 45 67", car: "Chevrolet Nexia 3 (Oq)", balance: "120,000" },
+                { name: "Jamshid Karimov", tel: "+998 93 456 78 90", car: "Chevrolet Cobalt (To'q ko'k)", balance: "85,000" }
+            ],
+            apps: [
+                { name: "Alisher Uzoqov", tel: "+998 99 888 77 66", car: "Gentra 2024, Oq, 01 A 777 AA" },
+                { name: "Zafar Toirov", tel: "+998 97 111 22 33", car: "Nexia 2, Kulrang, 10 B 123 CA" }
+            ],
+            sos: [
+                { name: "Mirzoulug'", tel: "+998 90 000 11 22", loc: "Yangiyer ➔ Toshkent", time: "12:45" }
+            ]
+        };
+
+        function show(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById('t-' + tab).classList.add('tab-active');
+
+            const box = document.getElementById('main-content');
+            let html = '';
+
+            if (tab === 'drivers') {
+                data.drivers.forEach(d => {
+                    html += `
+                    <div class="card animate-list">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <div class="h-12 w-12 bg-zinc-800 rounded-full flex items-center justify-center font-black text-lg taxi-yellow">${d.name[0]}</div>
+                                <div>
+                                    <p class="font-black text-sm uppercase tracking-tighter">${d.name}</p>
+                                    <p class="text-[10px] text-gray-500 font-bold">${d.tel}</p>
+                                    <p class="text-[9px] text-gray-600 mt-0.5">${d.car}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[11px] font-black taxi-yellow">${d.balance} sum</p>
+                                <button class="text-[9px] text-red-500/50 font-black mt-1 uppercase">O'chirish</button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } else if (tab === 'apps') {
+                data.apps.forEach(a => {
+                    html += `
+                    <div class="card animate-list">
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <p class="font-black text-sm uppercase">${a.name}</p>
+                                <p class="text-[10px] text-gray-500">${a.tel}</p>
+                            </div>
+                            <div class="badge">NEW</div>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
+                            <p class="text-[11px] text-gray-300 italic font-medium leading-relaxed">"${a.car}"</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="action('tasdiq')" class="flex-1 btn-approve">TASDIQLASH</button>
+                            <button onclick="action('rad')" class="btn-reject px-6">RAD ETISH</button>
+                        </div>
+                    </div>`;
+                });
+            } else if (tab === 'sos') {
+                data.sos.forEach(s => {
+                    html += `
+                    <div class="card border-red-500/20 bg-red-500/5 animate-list">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <div class="h-2 w-2 bg-red-500 rounded-full animate-ping"></div>
+                            <p class="font-black text-[10px] text-red-500 uppercase tracking-widest">Yordam kerak</p>
+                        </div>
+                        <p class="font-black text-base">${s.name}</p>
+                        <p class="text-[10px] text-gray-500 mb-4">${s.tel}</p>
+                        <div class="bg-red-500/10 p-3 rounded-xl">
+                            <p class="text-[11px] font-bold text-red-200">📍 ${s.loc}</p>
+                        </div>
+                        <p class="text-[9px] text-gray-700 mt-4 font-bold text-right uppercase tracking-widest">${s.time}</p>
+                    </div>`;
+                });
+            } else if (tab === 'radio') {
+                html = `
+                <div class="card animate-list border-taxi-yellow/20">
+                    <p class="font-black text-[10px] uppercase taxi-yellow tracking-widest mb-4">Radio tarqatish</p>
+                    <textarea class="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-sm text-gray-200 outline-none h-40 focus:border-taxi-yellow/50 transition-all" placeholder="Barcha haydovchilarga e'lon yozing..."></textarea>
+                    <button onclick="action('xabar yuborildi')" class="w-full bg-taxi-yellow text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[3px] mt-4 shadow-lg shadow-taxi-yellow/10">YUBORISH</button>
+                </div>`;
             }
-        });
 
-        function showTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.className = "tab-btn text-gray-500 text-sm font-bold whitespace-nowrap");
-            document.getElementById('btn-' + tab).className = "tab-btn tab-active text-sm font-bold whitespace-nowrap";
-
-            const container = document.getElementById('tab-content');
-            container.innerHTML = '<div class="py-20 flex justify-center opacity-20"><div class="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div></div>';
-
-            if(tab === 'drivers') loadDrivers();
-            else if(tab === 'apps') loadApps();
-            else if(tab === 'sos') loadSOS();
-            else if(tab === 'broadcast') loadBroadcast();
+            box.innerHTML = html || '<div class="text-center py-20 opacity-20 font-bold">BO\'SH</div>';
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        function loadDrivers() {
-            db.collection("approved_drivers").onSnapshot(s => {
-                let html = '';
-                s.forEach(d => {
-                    const data = d.data();
-                    html += `<div class="card flex justify-between items-center animate-fade-in">
-                        <div>
-                            <p class="font-bold text-sm">${data.name}</p>
-                            <p class="text-[10px] text-gray-500 font-medium">${data.phone} • ${data.carInfo}</p>
-                            <p class="text-[9px] taxi-yellow font-bold mt-1 uppercase">Balans: ${data.balance.toLocaleString()} so'm</p>
-                        </div>
-                        <button onclick="deleteDriver('${data.phone}')" class="h-8 w-8 flex items-center justify-center bg-red-500/10 rounded-full text-red-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>`;
-                });
-                document.getElementById('tab-content').innerHTML = html || '<p class="text-center text-gray-600 py-10">Haydovchilar topilmadi</p>';
-            });
-        }
-
-        function loadApps() {
-            db.collection("applications").onSnapshot(s => {
-                let html = '';
-                s.forEach(d => {
-                    const data = d.data();
-                    html += `<div class="card">
-                        <p class="font-bold text-sm">${data.name} (${data.phone})</p>
-                        <p class="text-[10px] text-gray-500 mt-1">${data.carInfo}</p>
-                        <div class="flex space-x-2 mt-4">
-                            <button onclick="approveDriver('${data.phone}', '${data.name}', '${data.carInfo}')" class="flex-1 bg-white text-black py-2 rounded-xl font-black text-[10px] uppercase tracking-wider">Tasdiqlash</button>
-                            <button onclick="rejectApp('${data.phone}')" class="bg-zinc-800 text-gray-400 px-4 py-2 rounded-xl font-bold text-[10px] uppercase">Rad etish</button>
-                        </div>
-                    </div>`;
-                });
-                document.getElementById('tab-content').innerHTML = html || '<p class="text-center text-gray-600 py-10">Yangi arizalar yo'q</p>';
-            });
-        }
-
-        function loadSOS() {
-            db.collection("sos").orderBy("date", "desc").onSnapshot(s => {
-                let html = '';
-                s.forEach(d => {
-                    const data = d.data();
-                    html += `<div class="card border-red-500/20 bg-red-500/5">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <div class="h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
-                            <p class="font-black text-xs text-red-500 uppercase">Yordam so'rovi</p>
-                        </div>
-                        <p class="font-bold text-sm">${data.userName}</p>
-                        <p class="text-[10px] text-gray-400">${data.userPhone}</p>
-                        <p class="text-[11px] mt-2 font-medium">📍 ${data.route}</p>
-                        <p class="text-[9px] text-gray-600 mt-2">${data.date}</p>
-                    </div>`;
-                });
-                document.getElementById('tab-content').innerHTML = html || '<p class="text-center text-gray-600 py-10">SOS signallari yo'q</p>';
-            });
-        }
-
-        function loadBroadcast() {
-            document.getElementById('tab-content').innerHTML = `
-                <div class="card">
-                    <p class="font-black text-xs uppercase taxi-yellow mb-4">Umumiy xabar yuborish</p>
-                    <textarea id="bc-msg" class="w-full bg-black/50 border border-white/10 rounded-xl p-4 text-sm focus:border-yellow-500 outline-none h-32" placeholder="Xabaringizni yozing..."></textarea>
-                    <button onclick="sendBC()" class="w-full bg-taxi-yellow text-black py-3 rounded-xl font-black text-xs uppercase tracking-widest mt-4">Xabarni tarqatish</button>
-                </div>
-            `;
-        }
-
-        // Actions
-        function approveDriver(p, n, c) {
-            db.collection("approved_drivers").doc(p).set({ name: n, phone: p, carInfo: c, balance: 0, rating: 5, totalTrips: 0 });
-            db.collection("applications").doc(p).delete();
-            db.collection("users").doc(p).update({ role: "Driver" });
+        function action(msg) {
+            tg.showPopup({ title: 'Muvaffaqiyatli', message: msg, buttons: [{type: 'ok'}] });
             tg.HapticFeedback.notificationOccurred('success');
         }
 
-        function deleteDriver(p) {
-            if(confirm('Ushbu haydovchini o'chirmoqchimisiz?')) {
-                db.collection("approved_drivers").doc(p).delete();
-                db.collection("users").doc(p).update({ role: "User" });
-            }
-        }
-
-        // Init
-        showTab('drivers');
+        show('drivers');
     </script>
 </body>
 </html>
